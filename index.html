@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/x-icon" href="logo.ico" />
+    <link rel="stylesheet" href="style.css" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
+    />
+    <script defer src="script.js"></script>
+    <script defer src="node_modules\scrypt-js\scrypt.js"></script>
+    <title>GuardiGen | Generate Strong Passwords Right!</title>
+  </head>
+  <body>
+    <section class="main_section">
+      <img id="logo" src="logo.ico" alt="" />
+      <div class="scrambleText" id="scrambleText"></div>
+      <div id="spacer"></div>
+      <form id="passwordForm">
+        <label for="input1">Website:</label>
+        <input type="text" id="input1" required autocomplete="off" />
+        <div id="validationMessage" style="color: var(--text-secondary)"></div>
+        <label for="input2">Username:</label>
+        <input type="text" id="input2" required autocomplete="off" />
+        <label for="input3">Secret Key:</label>
+
+        <input type="text" id="input3" required autocomplete="off" />
+
+        <label for="passwordLength">Password Length:</label>
+        <select id="passwordLength" required>
+          <option value="10">10 Characters - Small</option>
+          <option selected value="15">15 Characters - Medium</option>
+          <option value="20">20 Characters - Large (Recommended)</option>
+        </select>
+        <button type="submit"><strong>Generate Password</strong></button>
+      </form>
+      <div id="passwordResult">
+        <input
+          type="password"
+          id="password"
+          readonly
+          placeholder="Password shows here"
+        />
+        <p id="copied" style="display: none">Password Copied to clipboard</p>
+      </div>
+    </section>
+
+    <section class="info_section">
+      <h2>Passwords are dead!</h2>
+      <p>
+        Welcome to GuardiGen, where we cook up passwords so strong, even the
+        internet's jealous! Just give us the website name, your username, and a
+        top-secret key, and voila! You'll have a password that's as unique as
+        your fingerprint (well, almost). And hey, no worries about us snooping
+        around—we keep it all offline and under lock and key on your device.
+        Lose your password? No problemo! Just swing by here, punch in the deets,
+        and bam! Your password's back like it never left. Who needs those stuffy
+        password managers or Wi-Fi anyway?
+      </p>
+      <div id="spacer"></div>
+      <div id="spacer"></div>
+      <h2>But Why ?</h2>
+      <h4>- Unique</h4>
+      <p>
+        Ever reused a password like it's your favorite pair of socks? Well,
+        GaurdiGen knows that's risky business. With just one secret key to
+        remember, GaurdiGen creates different passwords for each of your
+        accounts. Because let's face it, one-size-fits-all doesn't work for
+        passwords or socks.
+      </p>
+      <h4>- Strength</h4>
+      <p>
+        Did you know, more than 86% of people use passwords that could be
+        cracked faster than you can say "password@123"? GaurdiGen tackles this
+        head-on with super strong passwords that can withstand the mightiest of
+        cyber attacks. No more sitting ducks here!
+      </p>
+      <h4>- Unforgettable</h4>
+      <p>
+        GaurdiGen makes forgetting your password a thing of the past. Each
+        password is uniquely crafted based on your account details. Forget it?
+        No worries! Just regenerate it using the same secret key. Just remember,
+        keep that secret key… well, a secret!
+      </p>
+      <h4>- Trust</h4>
+      <p>
+        GaurdiGen isn't just another app - it's 100% free and open source. It
+        uses top-notch security algorithms to generate your passwords and
+        ensures every line of code you see is what runs on your device. Your
+        data stays yours—offline and secure, just like hiding your secret candy
+        stash from your siblings.
+      </p>
+      <div id="spacer"></div>
+      <div id="spacer"></div>
+      <h2>The Key is the Key!</h2>
+      <p>
+        Your secret key is as unique as your fingerprint. Choose one that even
+        Sherlock Holmes couldn't crack. Throw in some symbols, uppercase
+        letters, and numbers for that extra oomph against hackers.
+      </p>
+      <p>
+        GuardiGen plays referee—it'll let you know if your secret key is a
+        touchdown or needs a pep talk. Remember, keep your secret key under
+        wraps. Sharing it is like handing out your passwords on a silver
+        platter. Stick with your chosen secret key each time you whip up a new
+        password. If you're prone to forgetting, a password manager can babysit
+        all your secret keys like a pro.
+      </p>
+      <p>
+        For example, think of something like <code>SecretSauce#123!</code> or
+        <code>FortKnox$Secure&789</code>. They're tougher to crack than a
+        triple-locked breif-case.
+      </p>
+      <img src="how-it-works.png" id="howitworks" />
+    </section>
+    <section class="FAQ_section">
+      <div class="container">
+        <h2>Frequently Asked Questions</h2>
+        <div class="accordion">
+          <div class="accordion-item">
+            <button id="accordion-button-1" aria-expanded="false">
+              <span class="accordion-title">Why should I use GuardiGen?</span
+              ><span class="icon" aria-hidden="true"></span>
+            </button>
+            <div class="accordion-content">
+              <p>
+                Many people use very weak passwords that are easily hacked in
+                the event of a data breach.
+              </p>
+              <p>
+                Using the same password across multiple accounts is risky; if
+                one account is hacked, all linked accounts become
+                vulnerable.Remembering different passwords for various accounts
+                can be challenging and prone to forgetfulness.
+              </p>
+              <p>
+                GuardiGen addresses all these issues effectively, improving
+                password security without adding complexity to the password
+                creation process.
+              </p>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <button id="accordion-button-2" aria-expanded="false">
+              <span class="accordion-title"
+                >Will GuardiGen always generate the same password?</span
+              ><span class="icon" aria-hidden="true"></span>
+            </button>
+            <div class="accordion-content">
+              <p>
+                GuardiGen generates a robust password based on your input. This
+                password remains consistent as long as your input remains
+                unchanged.
+              </p>
+              <p>
+                However, by altering even a single variable such as the website
+                or username, the password automatically changes, ensuring each
+                of your accounts has a unique password.
+              </p>
+              <p>
+                Moreover, you can easily generate a different password for the
+                same account later. Simply modify your secret key or append a
+                number to your username to create another entirely distinct
+                password.
+              </p>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <button id="accordion-button-3" aria-expanded="false">
+              <span class="accordion-title"
+                >What if my account gets breached and hashes get leaked?</span
+              ><span class="icon" aria-hidden="true"></span>
+            </button>
+            <div class="accordion-content">
+              <p>
+                GuardiGen always creates the same password for the same input,
+                which can be a problem if there's a rare data breach. When using
+                hashed passwords like this, changing your secret key and making
+                a new GuardiGen is the only solution. This means you might have
+                to remember two different secret keys. It's not ideal and can be
+                bothersome, but you won't need to do it often. Even if hackers
+                get your password hash, it would take them many years to crack
+                it using brute force.
+              </p>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <button id="accordion-button-4" aria-expanded="false">
+              <span class="accordion-title"
+                >What if someone finds out my secret key?</span
+              ><span class="icon" aria-hidden="true"></span>
+            </button>
+            <div class="accordion-content">
+              <p>
+                If you follow the instructions for entering your secret key,
+                it's almost impossible for a hacker to use brute force to guess
+                it. I have to admit, though, there's still a slight chance. But
+                to succeed, they'd need a lot of supercomputers—so many that not
+                even the military could help them.
+              </p>
+              <p>
+                GuardiGen uses the Scrypt + SHA3 algorithm to create passwords,
+                which shields you from brute force attacks by specialized
+                hardware called ASICs. These devices are incredibly pricey. Even
+                if someone built one just for GuardiGen, it would cost thousands
+                of dollars and require a leaked copy of your account database.
+                Even then, cracking your secret key would be unlikely for many
+                years.
+              </p>
+              <p>
+                If your secret key is strong, there's no need to worry. I'm
+                confident because I use GuardiGen myself with a strong secret
+                key, which protects me from hackers. Hopefully, yours is just as
+                secure whenever GuardiGen gives the green light.
+              </p>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <button id="accordion-button-5" aria-expanded="false">
+              <span class="accordion-title"
+                >Is GuardiGen a password Manager?</span
+              ><span class="icon" aria-hidden="true"></span>
+            </button>
+            <div class="accordion-content">
+              <p>
+                No, not at all. Password managers need a database and usually
+                rely on the internet for syncing and storing multiple passwords
+                across websites.
+              </p>
+
+              <p>
+                GuardiGen, on the other hand, generates hashed passwords without
+                storing them in a database. It calculates passwords based on the
+                information you input, like solving a math problem: <br /><br />
+                <code>Website + Username + Secret = Password</code>
+              </p>
+              <ul>
+                <li>You should use <strong>GuardiGen</strong> if:</li>
+                <li>- You use the same password everywhere.</li>
+                <li>- You often forget passwords.</li>
+                <li>- You're not familiar with using a password manager.</li>
+                <li>- You prefer not to use a password manager.</li>
+                <li>
+                  - You want access to your passwords even without internet or
+                  access to a password manager.
+                </li>
+                <li>
+                  - You don't want to spend time creating strong passwords for
+                  each account individually.
+                </li>
+                <li>
+                  - You want your computer to handle password management with
+                  minimal upkeep.
+                </li>
+              </ul>
+
+              <p>
+                You don't need GuardiGen if you always have your password
+                manager database accessible, use strong and unique passwords for
+                every account, or always have internet access and multi-device
+                syncing. You can also use GuardiGen alongside a password
+                manager. This way, your password manager can store different
+                secret keys for added security in case of a database breach.
+                It's like having double protection.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <footer>
+      <div class="wrapper">
+        <p><strong>GuardiGen</strong>, All Rights Reserved, 2024</p>
+        <nav class="footer-nav">
+          <a href="#scrambleText">Back to top</a>
+          <a href="https://github.com/SanjeevKumar046" target="_blank"
+            >Github</a
+          >
+          <a href="mailto:iamsk046@gmail.com" target="_blank">Contact</a>
+        </nav>
+      </div>
+    </footer>
+    <script>
+      if (navigator.serviceWorker) {
+        navigator.serviceWorker.register("sw.js");
+      }
+    </script>
+  </body>
+</html>
