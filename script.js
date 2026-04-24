@@ -3,12 +3,119 @@ window.onload = function () {
   document.getElementById("input1").value = "";
   document.getElementById("input2").value = "";
   document.getElementById("input3").value = "";
-  document.getElementById("passwordLength").value = "";
   document.getElementById("password").value = "";
   document.getElementById("validationMessage").textContent = "";
+
+  // Form submission
+  document
+    .getElementById("passwordForm")
+    .addEventListener("submit", function (event) {
+      event.preventDefault();
+      generatePassword();
+    });
+
+  // ── Website custom dropdown ──────────────────────────────────────
+  const websiteInput = document.getElementById("input1");
+  const dropdown = document.getElementById("site-dropdown");
+  const sites = [
+    "amazon.com",
+    "facebook.com",
+    "github.com",
+    "instagram.com",
+    "linkedin.com",
+    "reddit.com",
+    "spotify.com",
+    "x.com"
+  ];
+
+  function renderDropdown(filter) {
+    const matches = sites.filter((s) => s.includes(filter.toLowerCase()));
+    if (matches.length === 0 || filter === "") {
+      dropdown.style.display = "none";
+      return;
+    }
+    dropdown.innerHTML = matches
+      .map((s) => `<div class="dropdown-item">${s}</div>`)
+      .join("");
+    dropdown.style.display = "block";
+
+    dropdown.querySelectorAll(".dropdown-item").forEach((item) => {
+      item.addEventListener("mousedown", function (e) {
+        e.preventDefault();
+        websiteInput.value = this.textContent;
+        dropdown.style.display = "none";
+        document.getElementById("validationMessage").textContent = "";
+      });
+    });
+  }
+
+  websiteInput.addEventListener("input", function () {
+    this.value = this.value.toLowerCase();
+    var input = this.value.trim();
+    var urlPattern = /^[a-zA-Z0-9]+\.[a-zA-Z]{2,}$/;
+    document.getElementById("validationMessage").textContent = urlPattern.test(
+      input
+    )
+      ? ""
+      : "Enter a valid website like google.com";
+    renderDropdown(input);
+  });
+
+  websiteInput.addEventListener("focus", function () {
+    if (this.value.trim() === "") renderDropdown(" "); // show all on focus if empty
+  });
+
+  websiteInput.addEventListener("blur", function () {
+    setTimeout(() => {
+      dropdown.style.display = "none";
+    }, 150);
+  });
+
+  // ── Secret key show/hide toggle ──────────────────────────────────
+  document
+    .getElementById("toggleSecret")
+    .addEventListener("click", function () {
+      const input = document.getElementById("input3");
+      const isPassword = input.type === "password";
+      input.type = isPassword ? "text" : "password";
+      this.textContent = isPassword ? "visibility_off" : "visibility";
+    });
+
+  // ── Secret key strength meter ────────────────────────────────────
+  document.getElementById("input3").addEventListener("input", function () {
+    updateStrength(this.value);
+  });
 };
 
-function generatePassword() {
+function updateStrength(value) {
+  const bar = document.getElementById("strengthBar");
+  const label = document.getElementById("strengthLabel");
+
+  let score = 0;
+  if (value.length >= 8) score++;
+  if (value.length >= 14) score++;
+  if (/[A-Z]/.test(value)) score++;
+  if (/[0-9]/.test(value)) score++;
+  if (/[^A-Za-z0-9]/.test(value)) score++;
+
+  const levels = [
+    { label: "", color: "transparent", width: "0%" },
+    { label: "Weak", color: "#e53e3e", width: "25%" },
+    { label: "Fair", color: "#dd6b20", width: "50%" },
+    { label: "Good", color: "#d69e2e", width: "75%" },
+    { label: "Strong", color: "#38a169", width: "90%" },
+    { label: "Fort Knox", color: "#00c853", width: "100%" }
+  ];
+
+  const level = levels[score];
+  bar.style.width = level.width;
+  bar.style.backgroundColor = level.color;
+  label.textContent = value.length > 0 ? level.label : "";
+  label.style.color = level.color;
+}
+
+async function generatePassword() {
+  const btn = document.querySelector("#passwordForm button[type='submit']");
   var input1 = document.getElementById("input1").value;
   var input2 = document.getElementById("input2").value;
   var input3 = document.getElementById("input3").value;
@@ -17,123 +124,104 @@ function generatePassword() {
     10
   );
 
-  // Combine inputs
-  var combinedInput = input1 + input2 + input3;
+  // Guard: make sure libraries are loaded
+  if (typeof jsSHA === "undefined") {
+    alert("SHA3 library not loaded yet. Please wait a moment and try again.");
+    return;
+  }
+  if (!window.scrypt || typeof window.scrypt.scrypt !== "function") {
+    alert("Scrypt library not loaded yet. Please wait a moment and try again.");
+    return;
+  }
 
-  // Generate SHA-256 hash of combined input
-  sha256(combinedInput)
-    .then(function (hash) {
-      // Ensure the password meets length requirement
-      var password = generatePasswordFromHash(hash, passwordLength);
+  // Loading state
+  btn.disabled = true;
+  btn.textContent = "Generating…";
 
-      // Update UI
-      document.getElementById("password").value = password;
-      navigator.clipboard.writeText(password);
+  try {
+    // Step 1: SHA3-512 hash of combined input
+    var combinedInput = input1 + input2 + input3;
+    var shaObj = new jsSHA("SHA3-512", "TEXT");
+    shaObj.update(combinedInput);
+    var sha3HashBytes = shaObj.getHash("UINT8ARRAY");
 
-      setTimeout(function () {
-        document.getElementById("input1").value = "";
-        document.getElementById("input2").value = "";
-        document.getElementById("input3").value = "";
-        document.getElementById("passwordLength").value = "";
-        document.getElementById("password").value = "";
-        document.getElementById("validationMessage").textContent = "";
-      }, 30000); // 60000 milliseconds = 1 minute
-    })
-    .catch(function (error) {
-      console.error("Error in hashing:", error);
-      alert("Failed to generate password. Please try again.");
-    });
+    // Step 2: scrypt
+    var saltBytes = new TextEncoder().encode(
+      input1 + input2 + ":" + passwordLength
+    );
+    var scryptKey = await window.scrypt.scrypt(
+      sha3HashBytes,
+      saltBytes,
+      16384,
+      8,
+      1,
+      32
+    );
+
+    // Step 3: Generate password
+    var password = generatePasswordFromHash(scryptKey, passwordLength);
+    var passwordField = document.getElementById("password");
+    passwordField.value = password;
+
+    // Glow animation
+    passwordField.classList.remove("glow");
+    void passwordField.offsetWidth;
+    passwordField.classList.add("glow");
+
+    // Clipboard
+    var pTag = document.getElementById("copied");
+    try {
+      await navigator.clipboard.writeText(password);
+      pTag.style.display = "block";
+      setTimeout(() => {
+        pTag.style.display = "none";
+      }, 5000);
+    } catch (clipErr) {
+      console.warn("Clipboard unavailable:", clipErr);
+      pTag.style.display = "none";
+    }
+
+    // Clear fields after 30 seconds
+    setTimeout(function () {
+      document.getElementById("input1").value = "";
+      document.getElementById("input2").value = "";
+      document.getElementById("input3").value = "";
+      passwordField.value = "";
+      passwordField.classList.remove("glow");
+      document.getElementById("validationMessage").textContent = "";
+      document.getElementById("strengthBar").style.width = "0%";
+      document.getElementById("strengthLabel").textContent = "";
+    }, 30000);
+  } catch (error) {
+    console.error("Error in password generation:", error);
+    alert("Failed to generate password: " + error.message);
+  } finally {
+    // Restore button
+    btn.disabled = false;
+    btn.innerHTML = "<strong>Generate Password</strong>";
+  }
 }
 
-// Function to generate SHA-256 hash
-function sha256(input) {
-  var encoder = new TextEncoder();
-  var data = encoder.encode(input);
-  return crypto.subtle.digest("SHA-256", data).then(function (hashBuffer) {
-    var hashArray = Array.from(new Uint8Array(hashBuffer));
-    var hashHex = hashArray
-      .map((b) => ("00" + b.toString(16)).slice(-2))
-      .join("");
-    return hashHex;
-  });
-}
-
-// Function to generate password from hash
-function generatePasswordFromHash(hash, length) {
-  var password = "";
+function generatePasswordFromHash(keyBytes, length) {
   var charset =
     "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+{}[];:<>,.?/";
+  var password = "";
+  var startIndex = 0;
+  var char = charset.charAt(keyBytes[startIndex] % charset.length);
 
-  var startCharIndex = 0; // Index to start from in the hash
-  var charIndex = parseInt(hash.substr(startCharIndex * 2, 2), 16);
-  var char = charset.charAt(charIndex % charset.length);
-
-  // Ensure the first character is a letter
   while (!/[a-zA-Z]/.test(char)) {
-    startCharIndex++;
-    charIndex = parseInt(hash.substr(startCharIndex * 2, 2), 16);
-    char = charset.charAt(charIndex % charset.length);
+    startIndex++;
+    char = charset.charAt(keyBytes[startIndex] % charset.length);
   }
 
-  password += char; // Add the valid starting character
-
-  // Generate the rest of the password
+  password += char;
   for (var i = 1; i < length; i++) {
-    charIndex = parseInt(hash.substr((startCharIndex + i) * 2, 2), 16);
-    password += charset.charAt(charIndex % charset.length);
+    password += charset.charAt(
+      keyBytes[(startIndex + i) % keyBytes.length] % charset.length
+    );
   }
-
   return password;
 }
-
-function convertFirstAlphabetToUpper(password) {
-  var lowercase = "abcdefghijklmnopqrstuvwxyz";
-  var uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-
-  // Convert password string to array of characters
-  var passwordArray = password.split("");
-
-  // Find the first alphabetical character and convert to uppercase
-  for (var i = 0; i < passwordArray.length; i++) {
-    var char = passwordArray[i];
-    if (lowercase.includes(char) || uppercase.includes(char)) {
-      passwordArray[i] = char.toUpperCase();
-      break;
-    }
-  }
-
-  // Join array back into string and return
-  return passwordArray.join("");
-}
-
-// Event listener for form submission
-document
-  .getElementById("passwordForm")
-  .addEventListener("submit", function (event) {
-    event.preventDefault();
-    generatePassword();
-    var pTag = document.getElementById("copied"); // Replace 'myParagraph' with the ID of your <p> tag
-    pTag.style.display = "block";
-
-    // Set timeout to hide the <p> tag after 5 seconds
-    setTimeout(function () {
-      pTag.style.display = "none";
-    }, 5000);
-  });
-
-// Function to validate the input as the user types
-document.getElementById("input1").addEventListener("input", function () {
-  var input = this.value.trim();
-
-  // Check if the input is a valid website URL without http:// or https://
-  var urlPattern = /^[a-zA-Z0-9]+\.[a-zA-Z]{2,}$/;
-  if (urlPattern.test(input)) {
-    document.getElementById("validationMessage").textContent = ""; // Clear error message
-  } else {
-    document.getElementById("validationMessage").textContent =
-      "Enter a valid website like google.com";
-  }
-});
 
 console.log("Nah, Nothing to look at here");
 
@@ -174,33 +262,31 @@ const PRIMER = [
   "`"
 ];
 
-const randomInteger = (min, max) => {
-  let rand = min + Math.random() * (max + 1 - min);
-  return Math.floor(rand);
-};
+const randomInteger = (min, max) =>
+  Math.floor(min + Math.random() * (max + 1 - min));
 
 (function scrambleText(node) {
-  let charsObj = [];
+  let charsObj = TEXT.split("").map((char) => ({
+    char,
+    delay: char === " " ? 0 : randomInteger(1, MAX_DELAY)
+  }));
 
-  TEXT.split("").forEach((char) => {
-    const delay = char === " " ? 0 : randomInteger(1, MAX_DELAY);
-    charsObj.push({ char, delay });
-  });
+  node.classList.add("scrambling");
 
   let timerId = setInterval(() => {
-    let scramblChars = [];
-    charsObj.forEach((obj) => {
-      if (obj.delay === 0) scramblChars.push(obj.char);
-      if (obj.delay > 0) {
-        scramblChars.push(PRIMER[randomInteger(0, MAX_DELAY - 1)]);
+    node.textContent = charsObj
+      .map((obj) => {
+        if (obj.delay === 0) return obj.char;
         obj.delay--;
-      }
-    });
-    node.textContent = scramblChars.join("");
+        return PRIMER[randomInteger(0, PRIMER.length - 1)];
+      })
+      .join("");
   }, 50);
 
   setTimeout(() => {
     clearInterval(timerId);
+    node.textContent = TEXT;
+    node.classList.remove("scrambling");
   }, MAX_DELAY * 1000);
 })(document.getElementById("scrambleText"));
 
@@ -208,18 +294,14 @@ const items = document.querySelectorAll(".accordion button");
 
 function toggleAccordion() {
   const itemToggle = this.getAttribute("aria-expanded");
-
-  for (i = 0; i < items.length; i++) {
+  for (let i = 0; i < items.length; i++) {
     items[i].setAttribute("aria-expanded", "false");
     items[i].nextElementSibling.style.maxHeight = null;
   }
-
-  if (itemToggle == "false") {
+  if (itemToggle === "false") {
     this.setAttribute("aria-expanded", "true");
     this.nextElementSibling.style.maxHeight =
       this.nextElementSibling.scrollHeight + "px";
-  } else {
-    this.nextElementSibling.style.maxHeight = null;
   }
 }
 
