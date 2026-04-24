@@ -1,0 +1,403 @@
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Space+Grotesk:wght@300..700&display=swap");
+
+/* #region Base */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-optical-sizing: auto;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+:root {
+  --background: #131419;
+  --alter-background: #1a1b22;
+  --accent: #6fa8dc;
+  --alter-accent: #588ec1;
+  --text-primary: #ffffff;
+  --text-secondary: #a0aec0;
+}
+
+body {
+  font-family: "Space Grotesk", sans-serif;
+  background-color: var(--background);
+  color: var(--text-primary);
+  overflow-x: hidden;
+  margin: 0;
+  position: relative;
+}
+
+code {
+  background-color: color-mix(in srgb, transparent 90%, white);
+  color: color-mix(in srgb, transparent 30%, white);
+  border-radius: 3px;
+  padding: 3px 5px;
+  margin: 0;
+}
+
+/* #endregion Base */
+
+/* #region Main_Section */
+
+#spacer {
+  width: 100vw;
+  height: 20px;
+}
+
+#logo {
+  width: 50px;
+  fill: var(--accent);
+}
+
+.scrambleText {
+  font-weight: bolder;
+  text-transform: uppercase;
+  font-size: 4em;
+  animation: fadeIn 5s;
+  font-family: "Outfit", sans-serif;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.main_section {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100vw;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  justify-content: center;
+  background-color: var(--alter-background);
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: ease all 0.3s;
+}
+
+label {
+  margin-bottom: 8px;
+  font-weight: bold;
+  color: var(--text-primary);
+  align-self: flex-start;
+}
+
+input[type="text"],
+select,
+input[type="password"] {
+  width: 100%;
+  height: 40px;
+  margin-bottom: 12px;
+  padding: 8px 12px;
+  background-color: var(--background);
+  border: 2px solid transparent;
+  border-radius: 4px;
+  color: var(--text-primary);
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.3s ease-in-out;
+}
+
+input[type="text"]:focus,
+select:focus {
+  border-color: var(--accent);
+}
+
+select {
+  appearance: none;
+}
+
+button {
+  width: 100%;
+  height: 40px;
+  margin-top: 16px;
+  background-color: var(--accent);
+  color: var(--background);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease-in-out;
+}
+
+button:hover {
+  background-color: var(--alter-accent);
+}
+
+#password {
+  height: 40px;
+  margin-top: 16px;
+  padding: 8px 12px;
+  background-color: color-mix(in srgb, var(--alter-background) 50%, black);
+  border: 2px solid transparent;
+  border-radius: 4px;
+  color: var(--text-primary);
+  font-size: 16px;
+  text-align: center;
+  outline: none;
+  transition: border-color 0.3s ease-in-out;
+}
+
+#password:focus {
+  border-color: var(--accent);
+}
+
+#passwordResult {
+  position: relative;
+  transition: ease all 0.3s;
+}
+
+#password::placeholder {
+  opacity: 0.2;
+}
+
+#copied {
+  /* display: block; */
+  color: #008000;
+  text-shadow: rgba(0, 255, 0, 0.9) 0px 0px 39px;
+  text-align: center;
+}
+
+.clickAnim {
+  animation: clicky 0.5s ease;
+}
+
+@keyframes clicky {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2) opacity(0.08);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+select {
+  appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
+  background-repeat: no-repeat;
+  background-position-x: 100%;
+  background-position-y: 5px;
+}
+
+@media only screen and (max-width: 960px) {
+  form {
+    width: 75vw;
+  }
+
+  #passwordResult {
+    width: 75vw;
+  }
+}
+
+@media only screen and (min-width: 960px) {
+  form {
+    width: 40vw;
+  }
+
+  #passwordResult {
+    width: 40vw;
+  }
+}
+
+/* #endregion Main_Section */
+
+/* #region Info_Section */
+
+.info_section {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: start;
+  margin: 0 5%;
+}
+
+h2 {
+  font-size: 2.5rem;
+  font-family: "Outfit", sans-serif;
+}
+
+h4 {
+  font-size: 1.5rem;
+  margin-top: 1.5rem;
+  font-family: "Outfit", sans-serif;
+}
+
+p {
+  text-align: justify;
+  margin-top: 0.3rem;
+}
+
+#howitworks {
+  width: auto;
+  height: 80vh;
+  align-self: center;
+}
+/* #endregion Info_Section */
+
+/* #region FAQ */
+
+.container {
+  margin: 0 auto;
+  padding: 4rem;
+  width: 48rem;
+}
+
+/* Accordion styles */
+.accordion .accordion-item {
+  border-bottom: 1px solid var(--alter-background);
+}
+
+.accordion button {
+  position: relative;
+  display: block;
+  text-align: left;
+  width: 100%;
+  padding: 1em 0;
+  color: var(--text-primary);
+  font-size: 1.15rem;
+  font-weight: 400;
+  border: none;
+  background: none;
+  outline: none;
+}
+
+.accordion button:hover {
+  cursor: pointer;
+  color: var(--accent);
+}
+
+.accordion button::after {
+  content: "";
+  display: block;
+  position: absolute;
+  top: 50%;
+  right: 0;
+  width: 22px;
+  height: 22px;
+  transform: translateY(-50%);
+  border: 1px solid;
+  border-radius: 22px;
+}
+
+.accordion .accordion-title {
+  padding: 1em 1.5em 1em 0;
+}
+
+.accordion .icon::before {
+  content: "";
+  display: block;
+  position: absolute;
+  top: 50%;
+  left: 98.1%;
+  transform: translate(-50%, -50%);
+  width: 10px;
+  height: 2px;
+  background: currentColor;
+}
+
+.accordion .icon::after {
+  content: "";
+  display: block;
+  position: absolute;
+  top: 50%;
+  left: 98.1%;
+  transform: translate(-50%, -50%);
+  width: 2px;
+  height: 10px;
+  background: currentColor;
+}
+
+.accordion button[aria-expanded="true"] {
+  color: var(--blue);
+}
+
+.accordion button[aria-expanded="true"] .icon::after {
+  width: 0;
+}
+
+.accordion .accordion-content {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: opacity 200ms ease, max-height 300ms ease;
+  will-change: opacity, max-height;
+  color: var(--text-secondary);
+}
+
+.accordion > p {
+  margin-top: 0;
+  padding: 0;
+}
+
+.accordion button[aria-expanded="true"] + .accordion-content {
+  opacity: 1;
+  max-height: 1000px;
+  transition: opacity 200ms ease, max-height 300ms ease;
+}
+
+.accordion .accordion-content p {
+  font-size: 1rem;
+  font-weight: 300;
+  margin: 2em 0;
+}
+
+/* #endregion FAQ */
+
+/* #region Footer */
+footer {
+  background: var(--alter-background);
+  display: table;
+  width: 100vw;
+  height: 8rem;
+  text-align: center;
+  padding: 1rem;
+  font-family: "Arial", sans-serif;
+  font-size: 0.875rem;
+}
+
+.wrapper {
+  display: table-cell;
+  vertical-align: middle;
+}
+
+footer p {
+  color: var(--text-primary);
+  letter-spacing: 0.025rem;
+  margin-bottom: 1.5rem;
+  display: block;
+  text-align: center;
+}
+
+.footer-nav a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  margin: 0 0.5rem;
+  display: inline-block;
+}
+
+.footer-nav a:hover {
+  color: var(--accent);
+  transition: color 0.15s ease-in-out;
+}
+/* #endregion Footer */
