@@ -93,6 +93,12 @@ form {
   transition: ease all 0.3s;
 }
 
+.material-symbols-outlined {
+  font-family: "Material Symbols Outlined";
+  font-size: 20px;
+  user-select: none;
+}
+
 label {
   margin-bottom: 8px;
   font-weight: bold;
